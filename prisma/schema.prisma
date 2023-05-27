@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+model Configuration {
+  id                    Int       @id @unique @default(autoincrement())
+  updateRoutineDeadline DateTime?
+}
+
+model Room {
+  id       Int      @id @unique @default(autoincrement())
+  name     String   @unique
+  capacity Int
+  periods  Period[]
+}
+
+model Day {
+  id      Int      @id @unique @default(autoincrement())
+  name    String   @unique
+  periods Period[]
+}
+
+model User {
+  id          Int       @id @unique @default(autoincrement())
+  name        String
+  email       String    @unique
+  student_id  String?   @unique
+  password    String
+  rawPassword String?
+  isAdmin     Boolean?  @default(false)
+  course      String?
+  section     Int?
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+  periods     Period[]
+}
+
+model Schedule {
+  id        Int       @id @unique @default(autoincrement())
+  from      String    @unique
+  to        String    @unique
+  createdAt DateTime? @default(now())
+  periods   Period[]
+}
+
+model Period {
+  id         Int      @id @unique @default(autoincrement())
+  scheduleId Int
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  dayId      Int
+  day        Day      @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  roomId     Int
+  room       Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
