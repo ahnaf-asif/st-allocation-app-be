@@ -28,7 +28,11 @@ export class StService {
 
   async getSchedules() {
     try {
-      const schedules = await this.prisma.schedule.findMany({});
+      const schedules = await this.prisma.schedule.findMany({
+        orderBy: {
+          from: 'asc'
+        }
+      });
       return { data: schedules } as IServiceData;
     } catch (e) {
       return { prismaError: e } as IServiceData;

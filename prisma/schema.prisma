@@ -10,6 +10,8 @@ datasource db {
 model Configuration {
   id                    Int       @id @unique @default(autoincrement())
   updateRoutineDeadline DateTime?
+  totalPeriodsPerWeek   Int
+  maxPeriodsPerDay      Int
 }
 
 model Room {
@@ -42,8 +44,8 @@ model User {
 
 model Schedule {
   id        Int       @id @unique @default(autoincrement())
-  from      String    @unique
-  to        String    @unique
+  from      String
+  to        String
   createdAt DateTime? @default(now())
   periods   Period[]
 }

@@ -3,7 +3,14 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '@/prisma/prisma.service';
 import { IServiceData, ServiceError } from '@/shared/interfaces';
-import { AddRoomDto, AddStDto, UpdateConfigurationDto, UpdateStDto } from './dto/admin.dto';
+import {
+  AddRoomDto,
+  AddScheduleDto,
+  AddStDto,
+  UpdateConfigurationDto,
+  UpdateScheduleDto,
+  UpdateStDto
+} from './dto/admin.dto';
 
 @Injectable()
 export class AdminService {
@@ -26,6 +33,51 @@ export class AdminService {
         });
         return { data: newConfiguration } as IServiceData;
       }
+    } catch (e) {
+      return { prismaError: e } as IServiceData;
+    }
+  }
+
+  async addSchedule(addScheduleDto: AddScheduleDto) {
+    try {
+      const schedule = await this.prisma.schedule.create({
+        data: {
+          ...addScheduleDto
+        }
+      });
+
+      return { data: schedule } as IServiceData;
+    } catch (e) {
+      return { prismaError: e } as IServiceData;
+    }
+  }
+
+  async updateSchedule(id: number, updateScheduleDto: UpdateScheduleDto) {
+    try {
+      const schedule = await this.prisma.schedule.update({
+        where: {
+          id
+        },
+        data: {
+          ...updateScheduleDto
+        }
+      });
+
+      return { data: schedule } as IServiceData;
+    } catch (e) {
+      return { prismaError: e } as IServiceData;
+    }
+  }
+
+  async deleteSchedule(id: number) {
+    try {
+      const schedule = await this.prisma.schedule.delete({
+        where: {
+          id
+        }
+      });
+
+      return { data: schedule } as IServiceData;
     } catch (e) {
       return { prismaError: e } as IServiceData;
     }

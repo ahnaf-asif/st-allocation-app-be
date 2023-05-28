@@ -3,15 +3,24 @@ import {
   IsEmail,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
+  Max,
   Min
 } from 'class-validator';
 
 export class UpdateConfigurationDto {
   @IsDateString({ strict: false }, { message: 'Please enter a valid date' })
-  @IsOptional()
-  updateRoutineDeadline?: Date;
+  updateRoutineDeadline: Date;
+
+  @IsNumber({}, { message: 'Enter a valid number' })
+  @Min(1, { message: 'Total periods must be at least 1' })
+  totalPeriodsPerWeek: number;
+
+  @IsNumber({}, { message: 'Enter a valid number' })
+  @Min(1, { message: 'Total periods per day must be at least 1' })
+  maxPeriodsPerDay: number;
 }
 
 export class AddRoomDto {
@@ -58,3 +67,15 @@ export class UpdateStDto {
   @IsNotEmpty({ message: 'section: Section cannot be empty' })
   section: number;
 }
+
+export class AddScheduleDto {
+  @IsString({ message: 'Enter a valid string' })
+  @IsNotEmpty({ message: 'from:from cannot be empty' })
+  from: string;
+
+  @IsString({ message: 'Enter a valid string' })
+  @IsNotEmpty({ message: 'from:from cannot be empty' })
+  to: string;
+}
+
+export class UpdateScheduleDto extends AddScheduleDto {}

@@ -16,7 +16,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAccess } from '@/guards';
 import { ControllerErrorHandler } from '@/shared/error-handlers';
 import { IServiceData } from '@/shared/interfaces';
-import { AddRoomDto, AddStDto, UpdateConfigurationDto, UpdateStDto } from './dto/admin.dto';
+import {
+  AddRoomDto,
+  AddScheduleDto,
+  AddStDto,
+  UpdateConfigurationDto,
+  UpdateScheduleDto,
+  UpdateStDto
+} from './dto/admin.dto';
 
 @ApiBearerAuth()
 @UseGuards(AdminAccess)
@@ -43,6 +50,30 @@ export class AdminController {
   @Get('/routine')
   async getRoutine() {
     const resp: IServiceData = await this.adminService.getRoutine();
+    return this.controllerErrorHandler.handleResponse(resp);
+  }
+
+  @Post('/schedules/add')
+  async addSchedule(@Body() addScheduleDto: AddScheduleDto) {
+    const resp: IServiceData = await this.adminService.addSchedule(addScheduleDto);
+    return this.controllerErrorHandler.handleResponse(resp);
+  }
+
+  @Patch('/schedules/:id')
+  async updateSchedule(
+    @Param('id', ParseIntPipe) scheduleId: number,
+    @Body() updateScheduleDto: UpdateScheduleDto
+  ) {
+    const resp: IServiceData = await this.adminService.updateSchedule(
+      +scheduleId,
+      updateScheduleDto
+    );
+    return this.controllerErrorHandler.handleResponse(resp);
+  }
+
+  @Delete('/schedules/:id')
+  async deleteSchedule(@Param('id', ParseIntPipe) scheduleId: number) {
+    const resp: IServiceData = await this.adminService.deleteSchedule(+scheduleId);
     return this.controllerErrorHandler.handleResponse(resp);
   }
 

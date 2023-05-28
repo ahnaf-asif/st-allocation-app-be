@@ -25,21 +25,27 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
           isAdmin: true
         }
       });
+
       const appConfig = await prisma.configuration.findMany();
+
       if (appConfig.length == 0) {
         await prisma.configuration.create({
-          data: {}
+          data: {
+            updateRoutineDeadline: new Date(),
+            totalPeriodsPerWeek: 6,
+            maxPeriodsPerDay: 3
+          }
         });
       }
 
       await prisma.day.createMany({
         data: [
-          { name: 'Saturday' },
-          { name: 'Sunday' },
-          { name: 'Monday' },
-          { name: 'Tuesday' },
-          { name: 'Wednesday' },
-          { name: 'Thursday' }
+          { id: 1, name: 'Saturday' },
+          { id: 2, name: 'Sunday' },
+          { id: 3, name: 'Monday' },
+          { id: 4, name: 'Tuesday' },
+          { id: 5, name: 'Wednesday' },
+          { id: 6, name: 'Thursday' }
         ],
         skipDuplicates: true
       });
@@ -47,26 +53,32 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       await prisma.schedule.createMany({
         data: [
           {
+            id: 1,
             from: '08:00 AM',
             to: '09:20 AM'
           },
           {
+            id: 2,
             from: '09:30 AM',
             to: '10:50 AM'
           },
           {
+            id: 3,
             from: '11:00 AM',
             to: '12:20 PM'
           },
           {
+            id: 4,
             from: '12:30 PM',
             to: '01:50 PM'
           },
           {
+            id: 5,
             from: '02:00 PM',
             to: '03:20 PM'
           },
           {
+            id: 6,
             from: '03:30 PM',
             to: '04:50 PM'
           }
