@@ -13,18 +13,22 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       await this.$connect();
       const prisma = new PrismaClient();
 
-      await prisma.user.upsert({
-        where: {
-          email: this.config.get('ADMIN_EMAIL')
-        },
-        update: {},
-        create: {
-          email: this.config.get('ADMIN_EMAIL'),
-          password: await argon2.hash(this.config.get('ADMIN_PASSWORD')),
-          name: this.config.get('ADMIN_NAME'),
-          isAdmin: true
-        }
-      });
+      const userCount = await prisma.user.count();
+
+      if (userCount === 0) {
+        await prisma.user.upsert({
+          where: {
+            email: this.config.get('ADMIN_EMAIL')
+          },
+          update: {},
+          create: {
+            email: this.config.get('ADMIN_EMAIL'),
+            password: await argon2.hash(this.config.get('ADMIN_PASSWORD')),
+            name: this.config.get('ADMIN_NAME'),
+            isAdmin: true
+          }
+        });
+      }
 
       const appConfig = await prisma.configuration.findMany();
 
@@ -46,42 +50,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
           { id: 4, name: 'Tuesday' },
           { id: 5, name: 'Wednesday' },
           { id: 6, name: 'Thursday' }
-        ],
-        skipDuplicates: true
-      });
-
-      await prisma.schedule.createMany({
-        data: [
-          {
-            id: 1,
-            from: '08:00 AM',
-            to: '09:20 AM'
-          },
-          {
-            id: 2,
-            from: '09:30 AM',
-            to: '10:50 AM'
-          },
-          {
-            id: 3,
-            from: '11:00 AM',
-            to: '12:20 PM'
-          },
-          {
-            id: 4,
-            from: '12:30 PM',
-            to: '01:50 PM'
-          },
-          {
-            id: 5,
-            from: '02:00 PM',
-            to: '03:20 PM'
-          },
-          {
-            id: 6,
-            from: '03:30 PM',
-            to: '04:50 PM'
-          }
         ],
         skipDuplicates: true
       });

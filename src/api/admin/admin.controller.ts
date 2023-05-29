@@ -20,6 +20,7 @@ import {
   AddRoomDto,
   AddScheduleDto,
   AddStDto,
+  UpdateAccountDto,
   UpdateConfigurationDto,
   UpdateScheduleDto,
   UpdateStDto
@@ -34,6 +35,12 @@ export class AdminController {
     private readonly adminService: AdminService,
     private controllerErrorHandler: ControllerErrorHandler
   ) {}
+
+  @Patch('/update-account')
+  async updateAccount(@Body() updateAccountDto: UpdateAccountDto) {
+    const resp: IServiceData = await this.adminService.updateAccount(updateAccountDto);
+    return this.controllerErrorHandler.handleResponse(resp);
+  }
 
   @Patch('/configuration')
   async updateConfiguration(@Body() updateConfiguration: UpdateConfigurationDto) {
@@ -53,13 +60,7 @@ export class AdminController {
     return this.controllerErrorHandler.handleResponse(resp);
   }
 
-  @Post('/schedules/add')
-  async addSchedule(@Body() addScheduleDto: AddScheduleDto) {
-    const resp: IServiceData = await this.adminService.addSchedule(addScheduleDto);
-    return this.controllerErrorHandler.handleResponse(resp);
-  }
-
-  @Patch('/schedules/:id')
+  @Patch('/schedules/update/:id')
   async updateSchedule(
     @Param('id', ParseIntPipe) scheduleId: number,
     @Body() updateScheduleDto: UpdateScheduleDto
@@ -71,9 +72,15 @@ export class AdminController {
     return this.controllerErrorHandler.handleResponse(resp);
   }
 
-  @Delete('/schedules/:id')
+  @Delete('/schedules/delete/:id')
   async deleteSchedule(@Param('id', ParseIntPipe) scheduleId: number) {
     const resp: IServiceData = await this.adminService.deleteSchedule(+scheduleId);
+    return this.controllerErrorHandler.handleResponse(resp);
+  }
+
+  @Post('/schedules/add')
+  async addSchedule(@Body() addScheduleDto: AddScheduleDto) {
+    const resp: IServiceData = await this.adminService.addSchedule(addScheduleDto);
     return this.controllerErrorHandler.handleResponse(resp);
   }
 

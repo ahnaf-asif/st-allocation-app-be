@@ -7,14 +7,52 @@ import {
   AddRoomDto,
   AddScheduleDto,
   AddStDto,
+  UpdateAccountDto,
   UpdateConfigurationDto,
   UpdateScheduleDto,
   UpdateStDto
 } from './dto/admin.dto';
+import { isEarlierTime } from '@/shared/helpers';
+import { UserProxy } from '@/shared/async-storage';
+import { AuthService } from '@/api/auth/auth.service';
 
 @Injectable()
 export class AdminService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private userProxy: UserProxy,
+    private authService: AuthService
+  ) {}
+
+  async updateAccount(updateAccountDto: UpdateAccountDto) {
+    try {
+      const user = await this.prisma.user.update({
+        where: {
+          id: this.userProxy.id
+        },
+        data: {
+          email: updateAccountDto.email,
+          name: updateAccountDto.name
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          student_id: true,
+          isAdmin: true,
+          createdAt: true,
+          updatedAt: true,
+          password: true,
+          course: true,
+          section: true
+        }
+      });
+
+      return { data: await this.authService.signToken(user) } as IServiceData;
+    } catch (e) {
+      return { prismaError: e } as IServiceData;
+    }
+  }
 
   async updateConfiguration(updateConfigurationDto: UpdateConfigurationDto) {
     try {
@@ -112,7 +150,7 @@ export class AdminService {
 
   async getRoutine() {
     try {
-      const schedules = await this.prisma.schedule.findMany({
+      const initialSchedules = await this.prisma.schedule.findMany({
         include: {
           periods: {
             include: {
@@ -122,6 +160,8 @@ export class AdminService {
           }
         }
       });
+
+      const schedules = initialSchedules.sort(isEarlierTime);
 
       const days = await this.prisma.day.findMany({
         include: {

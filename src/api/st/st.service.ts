@@ -3,6 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { UserProxy } from '@/shared/async-storage';
 import { IServiceData, ServiceError } from '@/shared/interfaces';
 import { BookPeriodDto } from '@/api/st/dto/st.dto';
+import { isEarlierTime } from '@/shared/helpers';
 
 @Injectable()
 export class StService {
@@ -28,12 +29,10 @@ export class StService {
 
   async getSchedules() {
     try {
-      const schedules = await this.prisma.schedule.findMany({
-        orderBy: {
-          from: 'asc'
-        }
-      });
-      return { data: schedules } as IServiceData;
+      const schedules = await this.prisma.schedule.findMany({});
+      const sortedSchedule = schedules.sort(isEarlierTime);
+
+      return { data: sortedSchedule } as IServiceData;
     } catch (e) {
       return { prismaError: e } as IServiceData;
     }
@@ -50,7 +49,7 @@ export class StService {
     }
 
     try {
-      const schedules = await this.prisma.schedule.findMany({
+      const initialSchedules = await this.prisma.schedule.findMany({
         include: {
           periods: {
             where: {
@@ -63,6 +62,8 @@ export class StService {
           }
         }
       });
+
+      const schedules = initialSchedules.sort(isEarlierTime);
 
       const routine = schedules
         .filter((schedule: any) => schedule.periods.length > 0)

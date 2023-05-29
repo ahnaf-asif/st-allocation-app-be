@@ -10,6 +10,16 @@ import {
   Min
 } from 'class-validator';
 
+export class UpdateAccountDto {
+  @IsEmail({}, { message: 'Enter a valid email' })
+  @IsNotEmpty({ message: 'Email canont be empty' })
+  email: string;
+
+  @IsString({ message: 'Enter a valid name' })
+  @IsNotEmpty({ message: 'Name cannot be empty' })
+  name: string;
+}
+
 export class UpdateConfigurationDto {
   @IsDateString({ strict: false }, { message: 'Please enter a valid date' })
   updateRoutineDeadline: Date;
