@@ -125,17 +125,15 @@ export class StService {
       where: { id: 1 }
     });
 
-    if (config) {
-      const { updateRoutineDeadline } = config;
+    const { updateRoutineDeadline, totalPeriodsPerWeek, maxPeriodsPerDay, minDaysPerWeek } = config;
 
-      if (updateRoutineDeadline < new Date()) {
-        return {
-          businessError: {
-            type: ServiceError.BAD_REQUEST,
-            message: 'The deadline has passed already'
-          }
-        } as IServiceData;
-      }
+    if (updateRoutineDeadline < new Date()) {
+      return {
+        businessError: {
+          type: ServiceError.BAD_REQUEST,
+          message: 'The deadline has passed already'
+        }
+      } as IServiceData;
     }
 
     try {
@@ -164,12 +162,11 @@ export class StService {
         }
       });
 
-      if (alreadyBookedAtThisDay >= 3) {
+      if (alreadyBookedAtThisDay >= maxPeriodsPerDay) {
         return {
           businessError: {
             type: ServiceError.BAD_REQUEST,
-            message:
-              'You cannot book more than 3 periods in a single day. Please select another day'
+            message: `You cannot book more than ${maxPeriodsPerDay} periods in a single day. Please select another day`
           }
         } as IServiceData;
       }
@@ -183,12 +180,11 @@ export class StService {
         }
       });
 
-      if (alreadySelectedPeriodDays.length >= 6) {
+      if (alreadySelectedPeriodDays.length >= totalPeriodsPerWeek) {
         return {
           businessError: {
             type: ServiceError.BAD_REQUEST,
-            message:
-              'You cannot select more than 6 periods. If you want to change your time or day, remove any existing periods first'
+            message: `You cannot select more than ${totalPeriodsPerWeek} periods. If you want to change your time or day, remove any existing periods first`
           }
         } as IServiceData;
       }
@@ -201,12 +197,14 @@ export class StService {
 
       daySet.add(dayId);
 
-      if (alreadySelectedPeriodDays.length === 5 && daySet.size < 3) {
+      if (
+        alreadySelectedPeriodDays.length === totalPeriodsPerWeek - 1 &&
+        daySet.size < minDaysPerWeek
+      ) {
         return {
           businessError: {
             type: ServiceError.BAD_REQUEST,
-            message:
-              'You have to select at least 3 different days for your sessions, and you cannot select more than 3 sessions in one day'
+            message: `You have to select at least ${minDaysPerWeek} different days for your sessions, and you cannot select more than ${maxPeriodsPerDay} sessions in one day`
           }
         } as IServiceData;
       }

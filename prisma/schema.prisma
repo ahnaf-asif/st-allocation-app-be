@@ -12,6 +12,7 @@ model Configuration {
   updateRoutineDeadline DateTime?
   totalPeriodsPerWeek   Int
   maxPeriodsPerDay      Int
+  minDaysPerWeek        Int
 }
 
 model Room {

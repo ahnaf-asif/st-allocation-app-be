@@ -37,7 +37,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
           data: {
             updateRoutineDeadline: new Date(),
             totalPeriodsPerWeek: 6,
-            maxPeriodsPerDay: 3
+            maxPeriodsPerDay: 3,
+            minDaysPerWeek: 3
           }
         });
       }

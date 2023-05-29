@@ -31,6 +31,10 @@ export class UpdateConfigurationDto {
   @IsNumber({}, { message: 'Enter a valid number' })
   @Min(1, { message: 'Total periods per day must be at least 1' })
   maxPeriodsPerDay: number;
+
+  @IsNumber({}, { message: 'Enter a valid number' })
+  @Min(1, { message: 'Minimum number of days must be at least 1' })
+  minDaysPerWeek: number;
 }
 
 export class AddRoomDto {
