@@ -25,7 +25,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
             email: this.config.get('ADMIN_EMAIL'),
             password: await argon2.hash(this.config.get('ADMIN_PASSWORD')),
             name: this.config.get('ADMIN_NAME'),
-            isAdmin: true
+            isAdmin: true,
+            isSuperAdmin: true
           }
         });
       }

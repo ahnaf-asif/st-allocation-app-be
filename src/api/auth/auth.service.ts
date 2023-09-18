@@ -28,6 +28,7 @@ export class AuthService {
           email: true,
           student_id: true,
           isAdmin: true,
+          isSuperAdmin: true,
           createdAt: true,
           updatedAt: true,
           password: true,
