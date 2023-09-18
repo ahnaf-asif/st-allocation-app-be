@@ -176,6 +176,16 @@ export class AdminService {
       });
 
       const rooms = await this.prisma.room.findMany({});
+      const allUsers = await this.prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          student_id: true,
+          course: true,
+          section: true
+        }
+      });
 
       const routine = schedules.map((schedule) => ({
         schedule: `${schedule.from} - ${schedule.to}`,
@@ -196,7 +206,12 @@ export class AdminService {
               },
               sts: schedule.periods.filter(
                 (period) => period.room.id === individualRoom.id && period.day.name === name
-              ).length
+              ).length,
+              stDetails: schedule.periods
+                .filter(
+                  (period) => period.room.id === individualRoom.id && period.day.name === name
+                )
+                .map(({ userId }) => allUsers.find((user) => user.id === userId))
             }));
           return acc;
         }, {})
