@@ -1,1 +1,1 @@
-export { AuthAccess, AdminAccess } from './guards';
+export { AuthAccess, AdminAccess, SuperAdminAccess } from './guards';

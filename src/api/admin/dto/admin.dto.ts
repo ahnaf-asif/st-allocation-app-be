@@ -55,13 +55,9 @@ export class AddStDto {
   @IsEmail({}, { message: 'name:Enter a valid email' })
   email: string;
 
-  @IsString({ message: 'name:Enter a valid course' })
+  @IsString({ message: 'name:Enter valid courses with sections' })
   @IsNotEmpty({ message: 'name:Course cannot be empty' })
   course: string;
-
-  @IsInt({ message: 'section: Enter a valid section number' })
-  @IsNotEmpty({ message: 'section: Section cannot be empty' })
-  section: number;
 
   @IsString({ message: 'student_id:Enter a valid student id' })
   @IsNotEmpty({ message: 'student_id:Student id cannot be empty' })

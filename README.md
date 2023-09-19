@@ -20,3 +20,7 @@
 
 * Run `test:cov-e2e` to generate the test coverage.
 
+#### Extra
+
+* Run `node-pre-gyp rebuild -C ./node_modules/argon2` if you are having problems with argon2 in mac m1/m2
+

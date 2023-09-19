@@ -15,13 +15,17 @@ import {
 import { isEarlierTime } from '@/shared/helpers';
 import { UserProxy } from '@/shared/async-storage';
 import { AuthService } from '@/api/auth/auth.service';
+import { BrevoService } from '@/services/brevo/brevo.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AdminService {
   constructor(
     private prisma: PrismaService,
     private userProxy: UserProxy,
-    private authService: AuthService
+    private authService: AuthService,
+    private brevo: BrevoService,
+    private config: ConfigService
   ) {}
 
   async updateAccount(updateAccountDto: UpdateAccountDto) {
@@ -287,10 +291,18 @@ export class AdminService {
       const newSt = await this.prisma.user.create({
         data: {
           ...addStDto,
-          password: await argon2.hash(randomPassword),
-          rawPassword: randomPassword
+          password: await argon2.hash(randomPassword)
         }
       });
+
+      await this.brevo.sendCreationMail(
+        { name: 'BRACU ST Panel', email: this.config.get('BREVO_MAIL_SENDER') },
+        [{ name: newSt.name, email: newSt.email }],
+        'Welcome to BRACU Student Tutor Panel',
+        newSt.email,
+        randomPassword,
+        'Hello, You have been invited as a student tutor at BRAC University. You are requested to log in with the following credentials, and change the password.'
+      );
 
       return { data: newSt } as IServiceData;
     } catch (e) {
@@ -432,6 +444,85 @@ export class AdminService {
       });
 
       return { data: deletedRoom } as IServiceData;
+    } catch (e) {
+      return { prismaError: e } as IServiceData;
+    }
+  }
+
+  async addAdmin(addAdminDto: UpdateAccountDto) {
+    try {
+      const adminExistsInEmail = await this.prisma.user.findUnique({
+        where: {
+          email: addAdminDto.email
+        }
+      });
+
+      if (adminExistsInEmail) {
+        return {
+          businessError: {
+            type: ServiceError.BAD_REQUEST,
+            message: 'email:Email already exists'
+          }
+        } as IServiceData;
+      }
+
+      const randomPassword = Math.random().toString(36).slice(-8);
+
+      const newAdmin = await this.prisma.user.create({
+        data: {
+          ...addAdminDto,
+          password: await argon2.hash(randomPassword),
+          isAdmin: true
+        }
+      });
+
+      await this.brevo.sendCreationMail(
+        { name: 'BRACU ST Panel', email: this.config.get('BREVO_MAIL_SENDER') },
+        [{ name: newAdmin.name, email: newAdmin.email }],
+        'Welcome to BRACU ST Admin Panel',
+        newAdmin.email,
+        randomPassword,
+        'Hello, You have been invited as an admin of BRAC University Student Tutor Panel.'
+      );
+
+      return { data: newAdmin } as IServiceData;
+    } catch (e) {
+      return { prismaError: e } as IServiceData;
+    }
+  }
+
+  async removeAdmin(id: number) {
+    try {
+      const admin = await this.prisma.user.delete({
+        where: { id }
+      });
+
+      return { data: admin } as IServiceData;
+    } catch (e) {
+      return { prismaError: e } as IServiceData;
+    }
+  }
+
+  async getAllAdmins() {
+    try {
+      const allAdmins = await this.prisma.user.findMany({
+        where: {
+          isAdmin: true,
+          isSuperAdmin: false
+        },
+
+        select: {
+          id: true,
+          name: true,
+          rawPassword: true,
+          email: true
+        },
+        orderBy: {
+          id: 'desc'
+        }
+      });
+
+      return { data: allAdmins } as IServiceData;
     } catch (e) {
       return { prismaError: e } as IServiceData;
     }

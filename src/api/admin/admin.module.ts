@@ -8,6 +8,7 @@ import { JwtStrategy } from '@/api/auth/strategy';
 import { AuthService } from '@/api/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { BrevoService } from '@/services/brevo/brevo.service';
 
 @Module({
   controllers: [AdminController],
@@ -20,7 +21,8 @@ import { JwtService } from '@nestjs/jwt';
     ConfigService,
     AuthService,
     PrismaService,
-    JwtService
+    JwtService,
+    BrevoService
   ]
 })
 export class AdminModule {}

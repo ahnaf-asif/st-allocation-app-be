@@ -13,7 +13,7 @@ import {
 import { AdminService } from './admin.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-import { AdminAccess } from '@/guards';
+import { AdminAccess, SuperAdminAccess } from '@/guards';
 import { ControllerErrorHandler } from '@/shared/error-handlers';
 import { IServiceData } from '@/shared/interfaces';
 import {
@@ -137,6 +137,27 @@ export class AdminController {
   @Delete('/rooms/delete/:id')
   async deleteRoom(@Param('id') id: number) {
     const resp: IServiceData = await this.adminService.deleteRoom(+id);
+    return this.controllerErrorHandler.handleResponse(resp);
+  }
+
+  @UseGuards(SuperAdminAccess)
+  @Get('/super/admins')
+  async getAllAdmins() {
+    const resp: IServiceData = await this.adminService.getAllAdmins();
+    return this.controllerErrorHandler.handleResponse(resp);
+  }
+
+  @UseGuards(SuperAdminAccess)
+  @Post('/super/add-admin')
+  async addAdmin(@Body() addAdminDto: UpdateAccountDto) {
+    const resp: IServiceData = await this.adminService.addAdmin(addAdminDto);
+    return this.controllerErrorHandler.handleResponse(resp);
+  }
+
+  @UseGuards(SuperAdminAccess)
+  @Delete('/super/remove-admin/:id')
+  async removeAdmin(@Param('id') id: number) {
+    const resp: IServiceData = await this.adminService.removeAdmin(+id);
     return this.controllerErrorHandler.handleResponse(resp);
   }
 }
