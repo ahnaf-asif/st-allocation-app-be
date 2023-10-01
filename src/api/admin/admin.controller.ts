@@ -140,7 +140,6 @@ export class AdminController {
     return this.controllerErrorHandler.handleResponse(resp);
   }
 
-  @UseGuards(SuperAdminAccess)
   @Get('/super/admins')
   async getAllAdmins() {
     const resp: IServiceData = await this.adminService.getAllAdmins();

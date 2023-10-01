@@ -34,7 +34,6 @@ export class UserService {
 
   async changePassword(id: number, changePasswordDto: UpdatePasswordDto) {
     if (this.userProxy.id !== id && !this.userProxy.isAdmin) {
-      console.log(this.userProxy.isAdmin);
       return {
         businessError: {
           type: ServiceError.BAD_REQUEST,
@@ -64,13 +63,15 @@ export class UserService {
         changePasswordDto.oldPassword
       );
 
-      if (!passwordMatches) {
-        return {
-          businessError: {
-            type: ServiceError.BAD_REQUEST,
-            message: 'The current password is incorrect'
-          }
-        } as IServiceData;
+      if (!this.userProxy.isAdmin) {
+        if (!passwordMatches) {
+          return {
+            businessError: {
+              type: ServiceError.BAD_REQUEST,
+              message: 'The current password is incorrect'
+            }
+          } as IServiceData;
+        }
       }
 
       const updatedUser = await this.prisma.user.update({
@@ -86,6 +87,7 @@ export class UserService {
           name: true,
           email: true,
           isAdmin: true,
+          isSuperAdmin: true,
           createdAt: true,
           updatedAt: true,
           password: true,

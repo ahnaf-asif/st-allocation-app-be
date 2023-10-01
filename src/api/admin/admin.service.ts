@@ -139,7 +139,8 @@ export class AdminService {
           email: true,
           student_id: true,
           course: true,
-          section: true
+          section: true,
+          verificationEmailSent: true
         },
         orderBy: {
           id: 'desc'

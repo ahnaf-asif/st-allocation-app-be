@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 export function convertTo24HourFormat(time12: string): string {
   const [hrmn, a] = time12.split(' ');
   const [hour, minute] = hrmn.split(':');
@@ -54,4 +56,14 @@ export function isEarlierTime1(obj1: any, obj2: any) {
 
     return min1Num < min2Num ? -1 : 1;
   }
+}
+
+export function passwordResetToken() {
+  let bufferValue = new Buffer(64);
+
+  for (let i = 0; i < bufferValue.length; i++) {
+    bufferValue[i] = Math.floor(Math.random() * 256);
+  }
+
+  return bufferValue.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
