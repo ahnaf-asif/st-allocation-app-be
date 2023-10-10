@@ -180,15 +180,6 @@ export class StService {
         }
       });
 
-      if (alreadySelectedPeriodDays.length >= totalPeriodsPerWeek) {
-        return {
-          businessError: {
-            type: ServiceError.BAD_REQUEST,
-            message: `You cannot select more than ${totalPeriodsPerWeek} periods. If you want to change your time or day, remove any existing periods first`
-          }
-        } as IServiceData;
-      }
-
       const daySet = new Set();
 
       for (const period of alreadySelectedPeriodDays) {
