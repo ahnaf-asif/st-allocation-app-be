@@ -21,10 +21,10 @@ async function bootstrap() {
 
   if (SWAGGER_ENVS.includes(process.env.NODE_ENV)) {
     const config = new DocumentBuilder()
-      .setTitle('Sysrisk')
-      .setDescription('The Sysrisk API description')
+      .setTitle('BRACU ST')
+      .setDescription('The BRACU ST API description')
       .setVersion(process.env.npm_package_version)
-      .addTag('sysrisk')
+      .addTag('bracu-st')
       .addBearerAuth()
       .build();
 
@@ -36,6 +36,8 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document);
   }
 
-  await app.listen(process.env.BE_PORT || 8080);
+  const port = process.env.BE_PORT || 8080;
+
+  await app.listen(port);
 }
 bootstrap();

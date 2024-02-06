@@ -180,26 +180,6 @@ export class StService {
         }
       });
 
-      const daySet = new Set();
-
-      for (const period of alreadySelectedPeriodDays) {
-        daySet.add(period.dayId);
-      }
-
-      daySet.add(dayId);
-
-      if (
-        alreadySelectedPeriodDays.length === totalPeriodsPerWeek - 1 &&
-        daySet.size < minDaysPerWeek
-      ) {
-        return {
-          businessError: {
-            type: ServiceError.BAD_REQUEST,
-            message: `You have to select at least ${minDaysPerWeek} different days for your sessions, and you cannot select more than ${maxPeriodsPerDay} sessions in one day`
-          }
-        } as IServiceData;
-      }
-
       return true;
     } catch (e) {
       return { prismaError: e } as IServiceData;
