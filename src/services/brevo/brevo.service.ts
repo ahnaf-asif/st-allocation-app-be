@@ -10,6 +10,7 @@ export interface EmailUser {
 @Injectable()
 export class BrevoService {
   constructor(private config: ConfigService, private prisma: PrismaService) {}
+
   async sendCreationMail(
     sender: EmailUser,
     to: EmailUser[],

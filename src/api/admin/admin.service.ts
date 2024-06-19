@@ -18,6 +18,8 @@ import { AuthService } from '@/api/auth/auth.service';
 import { BrevoService } from '@/services/brevo/brevo.service';
 import { ConfigService } from '@nestjs/config';
 
+import * as Papa from 'papaparse';
+
 @Injectable()
 export class AdminService {
   constructor(
@@ -524,6 +526,74 @@ export class AdminService {
       });
 
       return { data: allAdmins } as IServiceData;
+    } catch (e) {
+      return { prismaError: e } as IServiceData;
+    }
+  }
+
+  async downloadRoutine(roomID: number) {
+    try {
+      const room = await this.prisma.room.findUnique({
+        where: {
+          id: roomID
+        }
+      });
+
+      const schedules = await this.prisma.schedule.findMany({
+        select: {
+          id: true,
+          from: true,
+          to: true
+        }
+      });
+
+      const days = await this.prisma.day.findMany();
+
+      let csv_columns = ['Days'];
+
+      for (const sc of schedules) {
+        csv_columns.push(`${sc.from} - ${sc.to}`);
+      }
+
+      let khanki = [csv_columns];
+
+      for (const day of days) {
+        const row = [];
+        row.push(day.name);
+
+        for (const sc of schedules) {
+          const periods = await this.prisma.period.findMany({
+            where: {
+              scheduleId: sc.id,
+              dayId: day.id,
+              roomId: room.id
+            },
+            include: {
+              user: {
+                select: {
+                  name: true,
+                  course: true
+                }
+              }
+            }
+          });
+
+          let sts = periods
+            .map(({ user }) => {
+              return `${user.name} - ${user.course}`;
+            })
+            .join('\n');
+          row.push(sts || ' ');
+        }
+
+        khanki.push(row);
+      }
+
+      // const csv = Papa.unparse(khanki);
+
+      return {
+        data: khanki
+      } as IServiceData;
     } catch (e) {
       return { prismaError: e } as IServiceData;
     }

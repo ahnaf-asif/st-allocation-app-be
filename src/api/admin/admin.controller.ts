@@ -1,14 +1,16 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
+  Header,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
   Query,
-  ParseIntPipe
+  Res,
+  UseGuards
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -25,6 +27,8 @@ import {
   UpdateScheduleDto,
   UpdateStDto
 } from './dto/admin.dto';
+
+import * as Papa from 'papaparse';
 
 @ApiBearerAuth()
 @UseGuards(AdminAccess)
@@ -158,5 +162,12 @@ export class AdminController {
   async removeAdmin(@Param('id') id: number) {
     const resp: IServiceData = await this.adminService.removeAdmin(+id);
     return this.controllerErrorHandler.handleResponse(resp);
+  }
+
+  @UseGuards(AdminAccess)
+  @Get('/download-routine/:roomID')
+  async downloadRoutine(@Param('roomID') roomID: number) {
+    const resp: IServiceData = await this.adminService.downloadRoutine(+roomID);
+    return Papa.unparse(resp.data as []);
   }
 }
