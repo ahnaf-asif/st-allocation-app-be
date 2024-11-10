@@ -170,4 +170,11 @@ export class AdminController {
     const resp: IServiceData = await this.adminService.downloadRoutine(+roomID);
     return Papa.unparse(resp.data as []);
   }
+
+  @UseGuards(AdminAccess)
+  @Post('/reset-routine')
+  async resetRoutine() {
+    const resp: IServiceData = await this.adminService.resetRoutine();
+    return this.controllerErrorHandler.handleResponse(resp);
+  }
 }

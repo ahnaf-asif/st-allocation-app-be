@@ -598,4 +598,18 @@ export class AdminService {
       return { prismaError: e } as IServiceData;
     }
   }
+
+  async resetRoutine() {
+    try {
+      const deletedPeriods = await this.prisma.period.deleteMany({});
+
+      console.log(deletedPeriods);
+
+      return {
+        data: deletedPeriods
+      } as IServiceData;
+    } catch (e) {
+      return { prismaError: e } as IServiceData;
+    }
+  }
 }
