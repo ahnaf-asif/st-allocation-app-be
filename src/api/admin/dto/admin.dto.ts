@@ -24,6 +24,9 @@ export class UpdateConfigurationDto {
   @IsDateString({ strict: false }, { message: 'Please enter a valid date' })
   updateRoutineDeadline: Date;
 
+  @IsDateString({ strict: false }, { message: 'Please enter a valid date' })
+  updateRoutineStartTime: Date;
+
   @IsNumber({}, { message: 'Enter a valid number' })
   @Min(1, { message: 'Total periods must be at least 1' })
   totalPeriodsPerWeek: number;
