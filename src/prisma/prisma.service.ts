@@ -38,6 +38,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         await prisma.configuration.create({
           data: {
             updateRoutineDeadline: new Date(),
+            updateRoutineStartTime: new Date(),
             totalPeriodsPerWeek: 6,
             maxPeriodsPerDay: 3,
             minDaysPerWeek: 3

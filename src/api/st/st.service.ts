@@ -125,7 +125,22 @@ export class StService {
       where: { id: 1 }
     });
 
-    const { updateRoutineDeadline, totalPeriodsPerWeek, maxPeriodsPerDay, minDaysPerWeek } = config;
+    const { 
+      updateRoutineStartTime, 
+      updateRoutineDeadline, 
+      totalPeriodsPerWeek, 
+      maxPeriodsPerDay, 
+      minDaysPerWeek 
+    } = config;
+
+    if (new Date() < updateRoutineStartTime){
+      return {
+        businessError: {
+          type: ServiceError.BAD_REQUEST,
+          message: 'The routine update has not started yet'
+        }
+      } as IServiceData;
+    }
 
     if (updateRoutineDeadline < new Date()) {
       return {

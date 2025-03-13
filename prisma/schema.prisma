@@ -8,11 +8,12 @@ datasource db {
 }
 
 model Configuration {
-  id                    Int       @id @unique @default(autoincrement())
-  updateRoutineDeadline DateTime?
-  totalPeriodsPerWeek   Int
-  maxPeriodsPerDay      Int
-  minDaysPerWeek        Int
+  id                     Int       @id @unique @default(autoincrement())
+  updateRoutineDeadline  DateTime?
+  updateRoutineStartTime DateTime?
+  totalPeriodsPerWeek    Int
+  maxPeriodsPerDay       Int
+  minDaysPerWeek         Int
 }
 
 model Room {
